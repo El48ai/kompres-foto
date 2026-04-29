@@ -1,4 +1,4 @@
-# PhotoCompress (dulu: kompres-foto-jkt48)
+# PhotoCompress (dulu: kompres-foto)
 
 ## Cara pakai (lokal)
 1. Clone repo

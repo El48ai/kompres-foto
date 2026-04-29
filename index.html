@@ -1,651 +1,1089 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>PhotoCompress — Modern Indonesia</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#1d232a" />
+  <title>PhotoCompress — Modern Indonesia</title>
 
-<!-- Tema warna baru (dark-soft), anti silau -->
-<style>
-:root{
-  --bg1:#1d232a;
-  --bg2:#252c34;
-  --card:#2f3640;
-  --card-light:#3a414c;
-  --text:#f2f5f7;
-  --text-dim:#b8c0c8;
-  --accent:#1e90ff;
-  --accent2:#0b7cf0;
-  --radius:14px;
-  --shadow:0 14px 32px rgba(0,0,0,0.35);
-}
+  <style>
+    :root{
+      --bg1:#1d232a;
+      --bg2:#252c34;
+      --card:#2f3640;
+      --card-light:#3a414c;
+      --text:#f2f5f7;
+      --text-dim:#b8c0c8;
+      --accent:#1e90ff;
+      --accent2:#0b7cf0;
+      --danger:#ef4444;
+      --success:#22c55e;
+      --radius:14px;
+      --shadow:0 14px 32px rgba(0,0,0,.35);
+    }
 
-/* RESET */
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
-  background:var(--bg1);
-  color:var(--text);
-  padding:18px;
-}
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
 
-/* HEADER */
-.app{width:100%;max-width:980px;margin:auto}
-.header{
-  display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;
-}
-.header h1{
-  font-size:28px;font-weight:700;color:var(--text);
-}
-.tag{color:var(--text-dim);font-size:14px}
+    html,body{
+      min-height:100%;
+    }
 
-/* CARD */
-.card{
-  background:var(--card);
-  border-radius:var(--radius);
-  padding:16px;
-  box-shadow:var(--shadow);
-  transition:transform .2s ease;
-}
-.card:hover{transform:translateY(-4px)}
+    body{
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left,rgba(30,144,255,.16),transparent 34%),
+        radial-gradient(circle at bottom right,rgba(34,197,94,.12),transparent 36%),
+        var(--bg1);
+      color:var(--text);
+      padding:18px;
+      overflow-x:hidden;
+    }
 
-/* DROPZONE */
-.dropzone{
-  border:2px dashed rgba(255,255,255,0.18);
-  border-radius:var(--radius);
-  padding:32px;
-  text-align:center;
-  background:var(--card-light);
-  cursor:pointer;
-}
-.dropzone.drag{
-  border-color:var(--accent);
-  background:#344150;
-}
-.dropzone svg{color:var(--accent);}
+    .app{
+      width:100%;
+      max-width:980px;
+      margin:auto;
+    }
 
-/* TEXT */
-.hint{
-  color:var(--text-dim);
-  font-size:14px;
-  margin-top:6px;
-}
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-bottom:16px;
+    }
 
-/* INPUT */
-input[type="number"], input[type="range"]{
-  width:100%;
-}
+    .header h1{
+      font-size:clamp(24px,6vw,34px);
+      font-weight:800;
+      color:var(--text);
+      letter-spacing:-.4px;
+    }
 
-/* BUTTONS (lebih besar & nyaman di HP) */
-.btn{
-  padding:12px 18px;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  background:var(--card-light);
-  color:var(--text);
-}
-.btn.primary{
-  background:var(--accent);
-  color:white;
-}
-.btn:disabled{
-  opacity:.5;
-}
+    .tag{
+      color:var(--text-dim);
+      font-size:14px;
+      margin-top:3px;
+    }
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:380px 1fr;
-  gap:20px;
-}
-@media(max-width:900px){
-  .grid{grid-template-columns:1fr}
-}
+    .small{
+      font-size:13px;
+      color:var(--text-dim);
+    }
 
-/* GALLERY */
-.gallery{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-  gap:14px;
-}
-.thumb{
-  background:var(--card-light);
-  border-radius:10px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-}
-.thumb img{
-  width:100%;
-  height:150px;
-  object-fit:cover;
-}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+    }
 
-/* PROGRESS BAR */
-#progressBar{
-  width:0%;
-  height:6px;
-  background:var(--accent);
-  border-radius:6px;
-  transition:width .25s;
-}
-.progress-container{
-  width:100%;
-  background:#111;
-  height:6px;
-  border-radius:6px;
-  margin:6px 0 12px 0;
-}
+    .card.hover:hover{
+      transform:translateY(-3px);
+    }
 
-/* PRIVACY POPUP */
-#privacyModal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.75);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-.privacy-box{
-  background:var(--card);
-  padding:20px;
-  border-radius:12px;
-  max-width:420px;
-  width:90%;
-  box-shadow:var(--shadow);
-}
-.privacy-box h2{
-  margin-bottom:10px;
-}
-.close-privacy{
-  margin-top:12px;
-  width:100%;
-}
+    .grid{
+      display:grid;
+      grid-template-columns:380px 1fr;
+      gap:20px;
+    }
 
-/* CAMERA MODAL */
-#camModal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-.cam-box{
-  background:var(--card);
-  padding:14px;
-  border-radius:12px;
-  width:92%;
-  max-width:400px;
-}
-.cam-video{
-  width:100%;
-  height:300px;
-  background:#000;
-  border-radius:10px;
-  overflow:hidden;
-}
-.cam-video video{
-  width:100%;height:100%;object-fit:cover;
-}
-</style>
+    @media(max-width:900px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .header{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+    }
+
+    .dropzone{
+      border:2px dashed rgba(255,255,255,.18);
+      border-radius:var(--radius);
+      padding:32px 18px;
+      text-align:center;
+      background:var(--card-light);
+      cursor:pointer;
+      transition:.2s ease;
+      user-select:none;
+    }
+
+    .dropzone:hover,
+    .dropzone.drag{
+      border-color:var(--accent);
+      background:#344150;
+      box-shadow:0 0 0 4px rgba(30,144,255,.12);
+    }
+
+    .dropzone svg{
+      color:var(--accent);
+      margin-bottom:4px;
+    }
+
+    .hint{
+      color:var(--text-dim);
+      font-size:14px;
+      margin-top:6px;
+    }
+
+    .link{
+      color:#7cc3ff;
+      font-weight:800;
+      cursor:pointer;
+      text-decoration:underline;
+    }
+
+    .controls{
+      margin-top:14px;
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .label{
+      font-size:14px;
+      color:var(--text-dim);
+      font-weight:700;
+      min-width:120px;
+    }
+
+    input[type="number"]{
+      width:130px;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:#20262e;
+      color:var(--text);
+      outline:none;
+    }
+
+    input[type="number"]:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(30,144,255,.18);
+    }
+
+    input[type="range"]{
+      flex:1;
+      min-width:150px;
+      accent-color:var(--accent);
+    }
+
+    select{
+      padding:10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:#20262e;
+      color:var(--text);
+      outline:none;
+    }
+
+    .btn{
+      padding:12px 16px;
+      border:none;
+      border-radius:12px;
+      font-size:15px;
+      font-weight:750;
+      cursor:pointer;
+      background:var(--card-light);
+      color:var(--text);
+      transition:.15s ease;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .btn:hover{
+      filter:brightness(1.07);
+      transform:translateY(-1px);
+    }
+
+    .btn:active{
+      transform:scale(.97);
+    }
+
+    .btn.primary{
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:white;
+    }
+
+    .btn.success{
+      background:linear-gradient(135deg,var(--success),#16a34a);
+      color:white;
+    }
+
+    .btn.danger{
+      background:linear-gradient(135deg,var(--danger),#dc2626);
+      color:white;
+    }
+
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+      filter:none;
+    }
+
+    .progress-container{
+      width:100%;
+      background:#111820;
+      height:8px;
+      border-radius:999px;
+      margin-bottom:14px;
+      overflow:hidden;
+      padding:0;
+    }
+
+    #progressBar{
+      width:0%;
+      height:100%;
+      background:linear-gradient(90deg,var(--accent),#60a5fa);
+      border-radius:999px;
+      transition:width .25s ease;
+    }
+
+    .gallery{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+      gap:14px;
+      min-height:180px;
+    }
+
+    .empty{
+      color:var(--text-dim);
+      text-align:center;
+      padding:34px 10px;
+      border:1px dashed rgba(255,255,255,.12);
+      border-radius:12px;
+      background:rgba(255,255,255,.03);
+      grid-column:1/-1;
+    }
+
+    .thumb{
+      background:var(--card-light);
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 10px 22px rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .thumb img{
+      width:100%;
+      height:150px;
+      object-fit:cover;
+      display:block;
+      background:#111;
+    }
+
+    .meta{
+      padding:9px;
+      font-size:12px;
+      color:var(--text-dim);
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+      word-break:break-word;
+    }
+
+    .meta strong{
+      color:var(--text);
+      font-size:12px;
+      line-height:1.25;
+    }
+
+    .saving{
+      color:#86efac;
+      font-weight:800;
+    }
+
+    .fail{
+      color:#fca5a5;
+      font-weight:800;
+    }
+
+    .thumb-actions{
+      display:flex;
+      gap:6px;
+      padding:0 9px 9px;
+    }
+
+    .thumb-actions .btn{
+      width:100%;
+      padding:8px 10px;
+      font-size:12px;
+      border-radius:9px;
+    }
+
+    .footer{
+      margin:16px 0 4px;
+      text-align:center;
+      color:var(--text-dim);
+      font-size:12px;
+    }
+
+    #privacyModal,
+    #camModal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.78);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:18px;
+    }
+
+    .privacy-box,
+    .cam-box{
+      background:var(--card);
+      padding:20px;
+      border-radius:16px;
+      max-width:440px;
+      width:100%;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    .privacy-box h2{
+      margin-bottom:10px;
+    }
+
+    .privacy-box p{
+      color:var(--text-dim);
+      margin-top:8px;
+      line-height:1.55;
+    }
+
+    .close-privacy{
+      margin-top:14px;
+      width:100%;
+    }
+
+    .cam-video{
+      width:100%;
+      height:300px;
+      background:#000;
+      border-radius:12px;
+      overflow:hidden;
+    }
+
+    .cam-video video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%) translateY(20px);
+      z-index:10000;
+      background:rgba(0,0,0,.8);
+      color:white;
+      padding:11px 16px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:14px;
+      opacity:0;
+      pointer-events:none;
+      transition:.25s ease;
+      max-width:calc(100% - 32px);
+      text-align:center;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    @supports (padding-bottom: env(safe-area-inset-bottom)){
+      .toast{
+        bottom:calc(18px + env(safe-area-inset-bottom));
+      }
+    }
+
+    @media(max-width:520px){
+      body{
+        padding:12px;
+      }
+
+      .card{
+        padding:14px;
+      }
+
+      .dropzone{
+        padding:28px 14px;
+      }
+
+      .btn{
+        width:100%;
+      }
+
+      .row .btn{
+        flex:1 1 140px;
+      }
+
+      .gallery{
+        grid-template-columns:repeat(auto-fill,minmax(135px,1fr));
+      }
+
+      .header h1{
+        font-size:26px;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <div class="app">
-    <div class="header">
+    <header class="header">
       <div>
         <h1>PhotoCompress</h1>
-        <div class="tag">Kompres gambar di browser — privat & modern</div>
+        <div class="tag">Kompres gambar di browser — privat, cepat, dan modern</div>
       </div>
       <div class="small">Bahasa: Indonesia</div>
-    </div>
+    </header>
 
-    <!-- global progress (file batch) -->
-    <div class="progress-container card" style="margin-bottom:12px">
+    <div class="progress-container card">
       <div id="progressBar"></div>
     </div>
 
-    <div class="grid">
-      <!-- LEFT: controls -->
-      <div>
-        <div class="card" id="panel">
+    <main class="grid">
+      <section>
+        <div class="card hover" id="panel">
           <div id="dropzone" class="dropzone" tabindex="0" aria-label="Tarik gambar ke sini atau pilih file">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M12 3v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M8 7l4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M21 15v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M8 7l4-4 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M21 15v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
 
-            <div style="font-weight:700;margin-top:8px">Seret & jatuhkan gambar di sini</div>
+            <div style="font-weight:800;margin-top:8px">Seret & jatuhkan gambar di sini</div>
             <div class="hint">atau <label for="fileInput" class="link">pilih file</label> • Maks 20 file</div>
           </div>
 
-          <!-- hidden inputs -->
           <input id="fileInput" type="file" accept="image/*" multiple hidden>
           <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden>
 
-          <!-- controls -->
-          <div class="controls" style="margin-top:12px">
+          <div class="controls">
             <div class="row">
               <div class="label">Kualitas</div>
-              <input id="quality" type="range" min="10" max="95" value="82" class="range">
-              <div id="qualityVal" style="min-width:36px;text-align:center;color:var(--text-dim);font-weight:700">82</div>
+              <input id="quality" type="range" min="10" max="95" value="82">
+              <div id="qualityVal" style="min-width:36px;text-align:center;color:var(--text-dim);font-weight:800">82</div>
             </div>
 
             <div class="row">
-              <div class="label">Lebar maks (px)</div>
-              <input id="maxWidth" type="number" min="64" max="6000" value="2048" style="width:120px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)">
-              <div class="small" style="color:var(--text-dim)">Aspek rasio otomatis</div>
+              <div class="label">Lebar maks</div>
+              <input id="maxWidth" type="number" min="64" max="6000" value="2048">
+              <div class="small">px • rasio otomatis</div>
             </div>
 
-            <div class="row" style="margin-top:10px;gap:8px">
-              <button id="compressBtn" class="btn primary">Kompres</button>
-              <button id="cameraBtn" class="btn">Ambil Foto</button>
-              <button id="downloadZipBtn" class="btn" disabled>Unduh ZIP</button>
+            <div class="row">
+              <div class="label">Format hasil</div>
+              <select id="formatSelect">
+                <option value="auto">Otomatis WebP/JPG</option>
+                <option value="webp">WebP</option>
+                <option value="jpeg">JPG</option>
+                <option value="png">PNG</option>
+              </select>
             </div>
 
-            <div class="row" style="margin-top:8px">
-              <button id="clearBtn" class="btn">Bersihkan</button>
-              <button id="privacyBtn" class="btn">Kebijakan Privasi</button>
+            <div class="row">
+              <button id="compressBtn" class="btn primary">⚡ Kompres</button>
+              <button id="cameraBtn" class="btn">📷 Ambil Foto</button>
+              <button id="downloadZipBtn" class="btn success" disabled>⬇️ Unduh ZIP</button>
             </div>
 
-            <div style="margin-top:10px" class="small">Status: <span id="status">0 file</span></div>
+            <div class="row">
+              <button id="clearBtn" class="btn danger">🗑️ Bersihkan</button>
+              <button id="privacyBtn" class="btn">🔒 Kebijakan Privasi</button>
+            </div>
+
+            <div style="margin-top:12px" class="small">
+              Status: <span id="status">Siap</span>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- RIGHT: gallery / preview -->
-      <div>
+      <section>
         <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px">
             <strong>Pratinjau</strong>
-            <span class="small">Ketuk gambar untuk unduh</span>
+            <span class="small">Setelah kompres, tombol unduh muncul</span>
           </div>
 
-          <div id="gallery" class="gallery" aria-live="polite"></div>
+          <div id="gallery" class="gallery" aria-live="polite">
+            <div class="empty">Belum ada gambar. Pilih file dulu.</div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
-    <div style="height:10px"></div>
-    <div class="small" style="text-align:center;color:var(--text-dim)">© PhotoCompress — semua proses di browser. Tidak ada upload.</div>
+    <div class="footer">
+      © PhotoCompress — semua proses dilakukan di browser. Tidak ada upload ke server.
+    </div>
   </div>
 
-  <!-- privacy modal (inline, single-file) -->
   <div id="privacyModal" role="dialog" aria-modal="true">
     <div class="privacy-box">
-      <h2>Kebijakan Privasi — PhotoCompress</h2>
-      <p>PhotoCompress melakukan semua kompresi secara lokal di perangkat Anda. Tidak ada gambar yang dikirim ke server kami. Kami tidak menyimpan data pribadi.</p>
-      <p>Jika Anda menggunakan fitur kamera, izin kamera hanya digunakan untuk menangkap gambar dan tidak disimpan di server.</p>
+      <h2>Kebijakan Privasi</h2>
+      <p>PhotoCompress melakukan kompresi gambar langsung di browser/perangkat Anda.</p>
+      <p>Gambar tidak dikirim ke server, tidak disimpan online, dan tidak dibagikan ke pihak lain.</p>
+      <p>Jika menggunakan kamera, izin kamera hanya dipakai untuk mengambil gambar.</p>
       <button id="closePrivacy" class="btn close-privacy">Tutup</button>
     </div>
   </div>
 
-  <!-- camera modal (for getUserMedia fallback) -->
   <div id="camModal" aria-hidden="true">
     <div class="cam-box">
-      <div class="cam-video"><video id="camVideo" autoplay playsinline></video></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
+      <div class="cam-video">
+        <video id="camVideo" autoplay playsinline></video>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
         <button id="camCapture" class="btn primary">Tangkap</button>
         <button id="camCancel" class="btn">Batal</button>
       </div>
     </div>
   </div>
-  <!-- JSZip CDN -->
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.0/dist/jszip.min.js"></script>
 
-<script>
-/* ==========================
-   ELEMENT SELECTION
-========================== */
-const fileInput = document.getElementById('fileInput');
-const cameraInput = document.getElementById('cameraInput');
-const cameraBtn = document.getElementById('cameraBtn');
-const compressBtn = document.getElementById('compressBtn');
-const downloadZipBtn = document.getElementById('downloadZipBtn');
-const clearBtn = document.getElementById('clearBtn');
-const privacyBtn = document.getElementById('privacyBtn');
-const dropzone = document.getElementById('dropzone');
+  <div id="toast" class="toast"></div>
 
-const qualityInput = document.getElementById('quality');
-const qualityVal = document.getElementById('qualityVal');
-const maxWidthInput = document.getElementById('maxWidth');
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
-const gallery = document.getElementById('gallery');
-const statusEl = document.getElementById('status');
-const progressBar = document.getElementById('progressBar');
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const compressBtn = document.getElementById('compressBtn');
+    const downloadZipBtn = document.getElementById('downloadZipBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const privacyBtn = document.getElementById('privacyBtn');
+    const dropzone = document.getElementById('dropzone');
 
-const privacyModal = document.getElementById('privacyModal');
-const closePrivacy = document.getElementById('closePrivacy');
+    const qualityInput = document.getElementById('quality');
+    const qualityVal = document.getElementById('qualityVal');
+    const maxWidthInput = document.getElementById('maxWidth');
+    const formatSelect = document.getElementById('formatSelect');
 
-const camModal = document.getElementById('camModal');
-const camVideo = document.getElementById('camVideo');
-const camCapture = document.getElementById('camCapture');
-const camCancel = document.getElementById('camCancel');
+    const gallery = document.getElementById('gallery');
+    const statusEl = document.getElementById('status');
+    const progressBar = document.getElementById('progressBar');
 
-let files = [];
-let compressedFiles = [];
-let camStream = null;
+    const privacyModal = document.getElementById('privacyModal');
+    const closePrivacy = document.getElementById('closePrivacy');
 
-function setStatus(t){ statusEl.textContent = t; }
+    const camModal = document.getElementById('camModal');
+    const camVideo = document.getElementById('camVideo');
+    const camCapture = document.getElementById('camCapture');
+    const camCancel = document.getElementById('camCancel');
 
-/* ==========================
-   QUALITY SLIDER
-========================== */
-qualityInput.addEventListener('input', ()=>{
-  qualityVal.textContent = qualityInput.value;
-});
+    const toast = document.getElementById('toast');
 
-/* ==========================
-   DROPZONE
-========================== */
-dropzone.addEventListener('click', ()=> fileInput.click());
+    let items = [];
+    let compressedFiles = [];
+    let camStream = null;
 
-dropzone.addEventListener('dragover', e=>{
-  e.preventDefault();
-  dropzone.classList.add('drag');
-});
-dropzone.addEventListener('dragleave', ()=>{
-  dropzone.classList.remove('drag');
-});
-dropzone.addEventListener('drop', e=>{
-  e.preventDefault();
-  dropzone.classList.remove('drag');
-  handleFiles(e.dataTransfer.files);
-});
-
-/* ==========================
-   FILE INPUT
-========================== */
-fileInput.addEventListener('change', e=>{
-  if(e.target.files) handleFiles(e.target.files);
-});
-
-/* ==========================
-   HANDLE FILES
-========================== */
-function handleFiles(list){
-  const incoming = Array.from(list).filter(f=>f.type.startsWith('image/'));
-  const allowed = incoming.slice(0, 20 - files.length);
-
-  for(const f of allowed){
-    files.push(f);
-    previewThumb(f);
-  }
-
-  setStatus(files.length + " file siap");
-}
-
-/* ==========================
-   PREVIEW THUMBNAIL
-========================== */
-function previewThumb(file){
-  const wrap = document.createElement('div');
-  wrap.className = "thumb";
-
-  const img = document.createElement('img');
-  img.alt = file.name;
-
-  const meta = document.createElement('div');
-  meta.className = "meta";
-  meta.innerHTML = `
-    <span>${file.name}</span>
-    <span>${Math.round(file.size/1024)} KB</span>
-  `;
-
-  wrap.appendChild(img);
-  wrap.appendChild(meta);
-  gallery.prepend(wrap);
-
-  const reader = new FileReader();
-  reader.onload = ()=> img.src = reader.result;
-  reader.readAsDataURL(file);
-
-  img.addEventListener('click', ()=>{
-    const a = document.createElement('a');
-    a.href = img.src;
-    a.download = file.name;
-    a.click();
-  });
-}
-
-/* ==========================
-   BUTTON — BERSIHKAN
-========================== */
-clearBtn.addEventListener('click', ()=>{
-  files = [];
-  compressedFiles = [];
-  gallery.innerHTML = "";
-  progressBar.style.width = "0%";
-  downloadZipBtn.disabled = true;
-  setStatus("bersih");
-});
-
-/* ==========================
-   COMPRESS ALL FILES
-========================== */
-compressBtn.addEventListener('click', async ()=>{
-  if(files.length === 0){
-    alert("Belum ada file untuk dikompres.");
-    return;
-  }
-
-  compressBtn.disabled = true;
-  setStatus("Mengompres...");
-  compressedFiles = [];
-
-  const total = files.length;
-
-  for(let i=0;i<total;i++){
-    const f = files[i];
-    setStatus(`Mengompres ${i+1}/${total} ...`);
-
-    const blob = await compressImage(f, {
-      quality: Number(qualityInput.value)/100,
-      maxWidth: Number(maxWidthInput.value),
-    });
-
-    const ext = supportsWebP() ? ".webp" : ".jpg";
-    const newName = f.name.replace(/\.[^/.]+$/, "") + ext;
-
-    compressedFiles.push({name:newName, blob});
-
-    // update progress bar
-    progressBar.style.width = Math.floor(((i+1)/total)*100) + "%";
-  }
-
-  downloadZipBtn.disabled = false;
-  setStatus("Selesai — " + compressedFiles.length + " file");
-  compressBtn.disabled = false;
-});
-
-/* ==========================
-   ZIP DOWNLOAD
-========================== */
-downloadZipBtn.addEventListener('click', async ()=>{
-  const zip = new JSZip();
-
-  compressedFiles.forEach(f=>{
-    zip.file(f.name, f.blob);
-  });
-
-  setStatus("Membuat ZIP...");
-
-  const content = await zip.generateAsync({type:'blob'}, meta=>{
-    progressBar.style.width = Math.floor(meta.percent)+"%";
-  });
-
-  const url = URL.createObjectURL(content);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = "hasil_kompres.zip";
-  a.click();
-
-  URL.revokeObjectURL(url);
-
-  setStatus("ZIP siap diunduh");
-});
-
-/* ==========================
-   IMAGE COMPRESSOR
-========================== */
-async function compressImage(file, {quality, maxWidth}){
-  const img = await loadImage(file);
-
-  const {width, height} = resizePreserve(img.width, img.height, maxWidth);
-
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-
-  const ctx = canvas.getContext('2d');
-  ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(img, 0,0,width,height);
-
-  const mime = supportsWebP() ? "image/webp" : "image/jpeg";
-
-  return await new Promise(resolve=>{
-    canvas.toBlob(b=>resolve(b), mime, quality);
-  });
-}
-
-function loadImage(file){
-  return new Promise((res,rej)=>{
-    const reader = new FileReader();
-    reader.onload = ()=>{
-      const img = new Image();
-      img.onload = ()=> res(img);
-      img.onerror = rej;
-      img.src = reader.result;
-    };
-    reader.onerror = rej;
-    reader.readAsDataURL(file);
-  });
-}
-
-function resizePreserve(w,h,maxW){
-  if(w <= maxW) return {width:w, height:h};
-  const ratio = maxW / w;
-  return {width: Math.round(w*ratio), height: Math.round(h*ratio)};
-}
-
-function supportsWebP(){
-  try{
-    const c = document.createElement('canvas');
-    return c.toDataURL("image/webp").indexOf("webp") !== -1;
-  }catch(e){ return false; }
-}
-
-/* ==========================
-   PRIVACY POPUP
-========================== */
-privacyBtn.addEventListener('click', ()=>{
-  privacyModal.style.display = "flex";
-});
-closePrivacy.addEventListener('click', ()=>{
-  privacyModal.style.display = "none";
-});
-
-/* ==========================
-   CAMERA (native + fallback)
-========================== */
-cameraBtn.addEventListener('click', async ()=>{
-
-  // coba native capture dulu
-  cameraInput.click();
-
-  const changed = await waitChange(cameraInput, 1200);
-  if(changed) return;
-
-  // fallback getUserMedia
-  openCameraModal();
-});
-
-cameraInput.addEventListener('change', e=>{
-  if(e.target.files && e.target.files.length){
-    handleFiles(e.target.files);
-  }
-});
-
-/* WAIT FOR INPUT CHANGE */
-function waitChange(input, ms=1000){
-  return new Promise(resolve=>{
-    let changed = false;
-
-    const handler = ()=>{
-      changed = true;
-      cleanup();
-      resolve(true);
-    };
-
-    input.addEventListener('change', handler);
-    const timeout = setTimeout(()=>{
-      if(!changed){
-        cleanup();
-        resolve(false);
-      }
-    }, ms);
-
-    function cleanup(){
-      clearTimeout(timeout);
-      input.removeEventListener('change', handler);
+    function setStatus(text){
+      statusEl.textContent = text;
     }
-  });
-}
 
-/* OPEN CAMERA MODAL */
-async function openCameraModal(){
-  camModal.style.display = "flex";
+    function showToast(text){
+      toast.textContent = text;
+      toast.classList.add('show');
 
-  try{
-    camStream = await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:"environment"},
-      audio:false
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    function formatBytes(bytes){
+      if(bytes === 0) return '0 B';
+
+      const units = ['B','KB','MB','GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(1024));
+      const value = bytes / Math.pow(1024, i);
+
+      return value.toFixed(value >= 10 || i === 0 ? 0 : 1) + ' ' + units[i];
+    }
+
+    function resetProgress(){
+      progressBar.style.width = '0%';
+    }
+
+    function setProgress(percent){
+      progressBar.style.width = Math.max(0, Math.min(100, percent)) + '%';
+    }
+
+    qualityInput.addEventListener('input', () => {
+      qualityVal.textContent = qualityInput.value;
     });
-    camVideo.srcObject = camStream;
-  }catch(err){
-    alert("Izin kamera ditolak atau tidak tersedia.");
-    camModal.style.display = "none";
-  }
-}
 
-camCancel.addEventListener('click', closeCamera);
+    dropzone.addEventListener('click', () => {
+      fileInput.click();
+    });
 
-function closeCamera(){
-  if(camStream){
-    camStream.getTracks().forEach(t=>t.stop());
-    camStream = null;
-  }
-  camModal.style.display = "none";
-}
+    dropzone.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
 
-/* CAPTURE BUTTON */
-camCapture.addEventListener('click', ()=>{
-  if(!camVideo.srcObject) return;
+    dropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropzone.classList.add('drag');
+    });
 
-  const canvas = document.createElement('canvas');
-  canvas.width = camVideo.videoWidth;
-  canvas.height = camVideo.videoHeight;
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('drag');
+    });
 
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(camVideo, 0,0);
+    dropzone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropzone.classList.remove('drag');
 
-  canvas.toBlob(blob=>{
-    const file = new File([blob], "camera_"+Date.now()+".jpg", {type:"image/jpeg"});
-    handleFiles([file]);
-    closeCamera();
-  },"image/jpeg",0.92);
-});
+      if(e.dataTransfer.files){
+        handleFiles(e.dataTransfer.files);
+      }
+    });
 
-/* ==========================
-   END
-========================== */
-setStatus("Siap");
+    fileInput.addEventListener('change', e => {
+      if(e.target.files){
+        handleFiles(e.target.files);
+        fileInput.value = '';
+      }
+    });
 
-</script>
+    cameraBtn.addEventListener('click', () => {
+      cameraInput.click();
+    });
+
+    cameraInput.addEventListener('change', e => {
+      if(e.target.files && e.target.files.length){
+        handleFiles(e.target.files);
+        cameraInput.value = '';
+      }
+    });
+
+    function handleFiles(fileList){
+      const incoming = Array.from(fileList).filter(file => file.type.startsWith('image/'));
+
+      if(incoming.length === 0){
+        showToast('File bukan gambar.');
+        return;
+      }
+
+      const remaining = 20 - items.length;
+
+      if(remaining <= 0){
+        showToast('Maksimal 20 file.');
+        return;
+      }
+
+      const allowed = incoming.slice(0, remaining);
+
+      allowed.forEach(file => {
+        const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+        const url = URL.createObjectURL(file);
+
+        items.push({
+          id,
+          file,
+          originalUrl:url,
+          compressedBlob:null,
+          compressedUrl:null,
+          compressedName:null,
+          error:null
+        });
+      });
+
+      if(incoming.length > allowed.length){
+        showToast('Sebagian file tidak ditambahkan. Maksimal 20 file.');
+      }
+
+      compressedFiles = [];
+      downloadZipBtn.disabled = true;
+      resetProgress();
+      renderGallery();
+      setStatus(items.length + ' file siap');
+    }
+
+    function renderGallery(){
+      gallery.innerHTML = '';
+
+      if(items.length === 0){
+        gallery.innerHTML = '<div class="empty">Belum ada gambar. Pilih file dulu.</div>';
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'thumb';
+
+        const img = document.createElement('img');
+        img.src = item.compressedUrl || item.originalUrl;
+        img.alt = item.file.name;
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+
+        const originalSize = formatBytes(item.file.size);
+
+        let detail = `
+          <strong>${item.file.name}</strong>
+          <span>Asli: ${originalSize}</span>
+        `;
+
+        if(item.error){
+          detail += `<span class="fail">${item.error}</span>`;
+        } else if(item.compressedBlob){
+          const newSize = formatBytes(item.compressedBlob.size);
+          const saving = Math.max(0, 100 - Math.round((item.compressedBlob.size / item.file.size) * 100));
+          detail += `
+            <span>Hasil: ${newSize}</span>
+            <span class="saving">Hemat: ${saving}%</span>
+          `;
+        } else {
+          detail += `<span>Belum dikompres</span>`;
+        }
+
+        meta.innerHTML = detail;
+
+        const actions = document.createElement('div');
+        actions.className = 'thumb-actions';
+
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'btn';
+        downloadBtn.textContent = item.compressedBlob ? 'Unduh' : 'Asli';
+
+        downloadBtn.addEventListener('click', () => {
+          if(item.compressedBlob){
+            downloadBlob(item.compressedBlob, item.compressedName);
+          } else {
+            downloadUrl(item.originalUrl, item.file.name);
+          }
+        });
+
+        actions.appendChild(downloadBtn);
+
+        card.appendChild(img);
+        card.appendChild(meta);
+        card.appendChild(actions);
+
+        gallery.appendChild(card);
+      });
+    }
+
+    clearBtn.addEventListener('click', () => {
+      items.forEach(item => {
+        if(item.originalUrl) URL.revokeObjectURL(item.originalUrl);
+        if(item.compressedUrl) URL.revokeObjectURL(item.compressedUrl);
+      });
+
+      items = [];
+      compressedFiles = [];
+      gallery.innerHTML = '<div class="empty">Belum ada gambar. Pilih file dulu.</div>';
+      resetProgress();
+      downloadZipBtn.disabled = true;
+      setStatus('Bersih');
+      showToast('Daftar gambar dibersihkan.');
+    });
+
+    compressBtn.addEventListener('click', async () => {
+      if(items.length === 0){
+        alert('Belum ada file untuk dikompres.');
+        return;
+      }
+
+      compressBtn.disabled = true;
+      downloadZipBtn.disabled = true;
+      compressedFiles = [];
+      resetProgress();
+      setStatus('Mengompres...');
+
+      const total = items.length;
+
+      for(let i = 0; i < total; i++){
+        const item = items[i];
+
+        try{
+          setStatus('Mengompres ' + (i + 1) + '/' + total + '...');
+
+          const result = await compressImage(item.file, {
+            quality:Number(qualityInput.value) / 100,
+            maxWidth:Number(maxWidthInput.value),
+            format:formatSelect.value
+          });
+
+          if(item.compressedUrl){
+            URL.revokeObjectURL(item.compressedUrl);
+          }
+
+          item.compressedBlob = result.blob;
+          item.compressedName = item.file.name.replace(/\.[^/.]+$/, '') + result.ext;
+          item.compressedUrl = URL.createObjectURL(result.blob);
+          item.error = null;
+
+          compressedFiles.push({
+            name:item.compressedName,
+            blob:item.compressedBlob
+          });
+        } catch(error){
+          item.error = 'Gagal dikompres';
+          console.error(error);
+        }
+
+        setProgress(Math.round(((i + 1) / total) * 100));
+        renderGallery();
+      }
+
+      compressBtn.disabled = false;
+      downloadZipBtn.disabled = compressedFiles.length === 0;
+
+      if(compressedFiles.length > 0){
+        setStatus('Selesai — ' + compressedFiles.length + ' file berhasil');
+        showToast('Kompresi selesai.');
+      } else {
+        setStatus('Gagal mengompres file');
+        showToast('Gagal mengompres gambar.');
+      }
+    });
+
+    downloadZipBtn.addEventListener('click', async () => {
+      if(compressedFiles.length === 0){
+        alert('Belum ada hasil kompres.');
+        return;
+      }
+
+      if(typeof JSZip === 'undefined'){
+        alert('JSZip gagal dimuat. Cek koneksi internet lalu refresh halaman.');
+        return;
+      }
+
+      const zip = new JSZip();
+
+      compressedFiles.forEach(file => {
+        zip.file(file.name, file.blob);
+      });
+
+      setStatus('Membuat ZIP...');
+      downloadZipBtn.disabled = true;
+
+      const content = await zip.generateAsync({type:'blob'}, meta => {
+        setProgress(Math.floor(meta.percent));
+      });
+
+      downloadBlob(content, 'hasil_kompres.zip');
+
+      downloadZipBtn.disabled = false;
+      setStatus('ZIP siap diunduh');
+      showToast('ZIP dibuat.');
+    });
+
+    async function compressImage(file, {quality, maxWidth, format}){
+      const img = await loadImage(file);
+
+      const target = resizePreserve(img.width, img.height, maxWidth);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = target.width;
+      canvas.height = target.height;
+
+      const ctx = canvas.getContext('2d', {alpha:true});
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, target.width, target.height);
+
+      const output = getOutputFormat(format);
+      const blob = await canvasToBlob(canvas, output.mime, output.mime === 'image/png' ? undefined : quality);
+
+      return {
+        blob,
+        ext:output.ext,
+        mime:output.mime
+      };
+    }
+
+    function loadImage(file){
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error('Gambar tidak bisa dibaca.'));
+        };
+
+        img.src = url;
+      });
+    }
+
+    function resizePreserve(width, height, maxWidth){
+      const maxW = Number(maxWidth) || 2048;
+
+      if(width <= maxW){
+        return {width, height};
+      }
+
+      const ratio = maxW / width;
+
+      return {
+        width:Math.round(width * ratio),
+        height:Math.round(height * ratio)
+      };
+    }
+
+    function canvasToBlob(canvas, mime, quality){
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
+          if(blob){
+            resolve(blob);
+          } else {
+            reject(new Error('Gagal membuat file hasil.'));
+          }
+        }, mime, quality);
+      });
+    }
+
+    function getOutputFormat(format){
+      if(format === 'webp'){
+        if(supportsWebP()){
+          return {mime:'image/webp', ext:'.webp'};
+        }
+
+        return {mime:'image/jpeg', ext:'.jpg'};
+      }
+
+      if(format === 'jpeg'){
+        return {mime:'image/jpeg', ext:'.jpg'};
+      }
+
+      if(format === 'png'){
+        return {mime:'image/png', ext:'.png'};
+      }
+
+      if(supportsWebP()){
+        return {mime:'image/webp', ext:'.webp'};
+      }
+
+      return {mime:'image/jpeg', ext:'.jpg'};
+    }
+
+    function supportsWebP(){
+      try{
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        return canvas.toDataURL('image/webp').startsWith('data:image/webp');
+      } catch(e){
+        return false;
+      }
+    }
+
+    function downloadBlob(blob, filename){
+      const url = URL.createObjectURL(blob);
+      downloadUrl(url, filename);
+
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
+    }
+
+    function downloadUrl(url, filename){
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    privacyBtn.addEventListener('click', () => {
+      privacyModal.style.display = 'flex';
+    });
+
+    closePrivacy.addEventListener('click', () => {
+      privacyModal.style.display = 'none';
+    });
+
+    privacyModal.addEventListener('click', e => {
+      if(e.target === privacyModal){
+        privacyModal.style.display = 'none';
+      }
+    });
+
+    async function openCameraModal(){
+      camModal.style.display = 'flex';
+
+      try{
+        camStream = await navigator.mediaDevices.getUserMedia({
+          video:{facingMode:'environment'},
+          audio:false
+        });
+
+        camVideo.srcObject = camStream;
+      } catch(error){
+        alert('Izin kamera ditolak atau kamera tidak tersedia.');
+        camModal.style.display = 'none';
+      }
+    }
+
+    function closeCamera(){
+      if(camStream){
+        camStream.getTracks().forEach(track => track.stop());
+        camStream = null;
+      }
+
+      camModal.style.display = 'none';
+    }
+
+    camCancel.addEventListener('click', closeCamera);
+
+    camCapture.addEventListener('click', () => {
+      if(!camVideo.srcObject){
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = camVideo.videoWidth;
+      canvas.height = camVideo.videoHeight;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(camVideo, 0, 0);
+
+      canvas.toBlob(blob => {
+        if(!blob){
+          alert('Gagal mengambil gambar.');
+          return;
+        }
+
+        const file = new File([blob], 'camera_' + Date.now() + '.jpg', {type:'image/jpeg'});
+        handleFiles([file]);
+        closeCamera();
+      }, 'image/jpeg', .92);
+    });
+
+    setStatus('Siap');
+  </script>
 </body>
 </html>
